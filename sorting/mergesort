@@ -1,0 +1,87 @@
+import java.util.*;
+
+public class mergesort {
+
+    enum OrderCase { BEST, WORST, AVERAGE }
+
+    // ----- Helpers to detect input order -----
+    static boolean isSortedAscending(int[] a) {
+        for (int i = 0; i < a.length - 1; i++) if (a[i] > a[i + 1]) return false;
+        return true;
+    }
+    static boolean isSortedDescending(int[] a) {
+        for (int i = 0; i < a.length - 1; i++) if (a[i] < a[i + 1]) return false;
+        return true;
+    }
+    static OrderCase detectCase(int[] a) {
+        if (isSortedAscending(a)) return OrderCase.BEST;
+        if (isSortedDescending(a)) return OrderCase.WORST;
+        return OrderCase.AVERAGE;
+    }
+
+    // ----- Merge Sort -----
+    static void mergeSort(int[] arr, int l, int r) {
+        if (l < r) {
+            int m = (l + r) / 2;
+            mergeSort(arr, l, m);
+            mergeSort(arr, m + 1, r);
+            merge(arr, l, m, r);
+        }
+    }
+
+    static void merge(int[] arr, int l, int m, int r) {
+        int n1 = m - l + 1;
+        int n2 = r - m;
+
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+
+        for (int i = 0; i < n1; i++) L[i] = arr[l + i];
+        for (int j = 0; j < n2; j++) R[j] = arr[m + 1 + j];
+
+        int i = 0, j = 0, k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) arr[k++] = L[i++];
+            else arr[k++] = R[j++];
+        }
+
+        while (i < n1) arr[k++] = L[i++];
+        while (j < n2) arr[k++] = R[j++];
+    }
+
+    // ----- Utility -----
+    static void printArray(int[] a) {
+        for (int x : a) System.out.print(x + " ");
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of elements: ");
+        int n = sc.nextInt();
+
+        int[] arr = new int[n];
+        System.out.println("Enter " + n + " integers:");
+        for (int i = 0; i < n; i++) arr[i] = sc.nextInt();
+
+        System.out.println("\nOriginal Array:");
+        printArray(arr);
+
+        // Detect input case
+        OrderCase inputCase = detectCase(arr);
+
+        // ---- Complexity report ----
+        System.out.println("\nMerge Sort:");
+        System.out.println("Detected input case: " + inputCase);
+        System.out.println("Time complexity for this input: O(n log n)");
+        System.out.println("Reason: Merge Sort always splits and merges recursively,");
+        System.out.println("so input order (sorted, reverse, random) does not change its complexity.");
+
+        // ---- Perform Merge Sort ----
+        mergeSort(arr, 0, arr.length - 1);
+
+        System.out.println("\nSorted Array:");
+        printArray(arr);
+    }
+}
