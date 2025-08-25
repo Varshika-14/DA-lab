@@ -1,0 +1,83 @@
+import java.util.*;
+
+public class quicksort{
+
+    enum OrderCase { BEST, WORST, AVERAGE }
+
+    // ----- Helpers to detect input order -----
+    static boolean isSortedAscending(int[] a) {
+        for (int i = 0; i < a.length - 1; i++) if (a[i] > a[i + 1]) return false;
+        return true;
+    }
+    static boolean isSortedDescending(int[] a) {
+        for (int i = 0; i < a.length - 1; i++) if (a[i] < a[i + 1]) return false;
+        return true;
+    }
+    static OrderCase detectCase(int[] a) {
+        if (isSortedAscending(a)) return OrderCase.WORST;   // poor pivot leads to worst case
+        if (isSortedDescending(a)) return OrderCase.WORST;  // same here
+        return OrderCase.AVERAGE;  // assume average for random inputs
+    }
+
+    // ----- Quick Sort -----
+    static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high]; // taking last element as pivot
+        int i = (low - 1);
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1]; arr[i + 1] = arr[high]; arr[high] = temp;
+        return i + 1;
+    }
+
+    // ----- Utility -----
+    static void printArray(int[] a) {
+        for (int x : a) System.out.print(x + " ");
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of elements: ");
+        int n = sc.nextInt();
+
+        int[] arr = new int[n];
+        System.out.println("Enter " + n + " integers:");
+        for (int i = 0; i < n; i++) arr[i] = sc.nextInt();
+
+        System.out.println("\nOriginal Array:");
+        printArray(arr);
+
+        // Detect input pattern
+        OrderCase inputCase = detectCase(arr);
+
+        // ---- Complexity report ----
+        System.out.println("\nQuick Sort:");
+        System.out.println("Detected input case: " + inputCase);
+        if (inputCase == OrderCase.WORST) {
+            System.out.println("Time complexity for this input: O(n^2)");
+            System.out.println("Reason: Array is sorted (ascending/descending), pivot choice is poor → unbalanced partitions.");
+        } else {
+            System.out.println("Time complexity for this input: O(n log n)");
+            System.out.println("Reason: Random order → partitions are roughly balanced on average.");
+        }
+
+        // ---- Perform Quick Sort ----
+        quickSort(arr, 0, arr.length - 1);
+
+        System.out.println("\nSorted Array:");
+        printArray(arr);
+    }
+}
