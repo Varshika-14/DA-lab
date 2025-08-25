@@ -1,0 +1,77 @@
+import java.util.*;
+
+public class insertionsort {
+
+    enum OrderCase { BEST, WORST, AVERAGE }
+
+    // ----- Helpers to detect input order -----
+    static boolean isSortedAscending(int[] a) {
+        for (int i = 0; i < a.length - 1; i++) if (a[i] > a[i + 1]) return false;
+        return true;
+    }
+    static boolean isSortedDescending(int[] a) {
+        for (int i = 0; i < a.length - 1; i++) if (a[i] < a[i + 1]) return false;
+        return true;
+    }
+    static OrderCase detectCase(int[] a) {
+        if (isSortedAscending(a)) return OrderCase.BEST;
+        if (isSortedDescending(a)) return OrderCase.WORST;
+        return OrderCase.AVERAGE;
+    }
+
+    // ----- Insertion Sort -----
+    static void insertionSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 1; i < n; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            // Move elements greater than key one position ahead
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j = j - 1;
+            }
+            arr[j + 1] = key;
+        }
+    }
+
+    static void printArray(int[] a) {
+        for (int x : a) System.out.print(x + " ");
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of elements: ");
+        int n = sc.nextInt();
+
+        int[] arr = new int[n];
+        System.out.println("Enter " + n + " integers:");
+        for (int i = 0; i < n; i++) arr[i] = sc.nextInt();
+
+        System.out.println("\nOriginal array:");
+        printArray(arr);
+
+        // Detect input pattern
+        OrderCase inputCase = detectCase(arr);
+
+        // ---- Report time complexity for THIS input ----
+        System.out.println("\nInsertion Sort:");
+        String complexity;
+        if (inputCase == OrderCase.BEST) {
+            complexity = "O(n)   (already sorted → just one comparison per element)";
+        } else if (inputCase == OrderCase.WORST) {
+            complexity = "O(n^2) (reverse sorted → maximum shifts for each element)";
+        } else {
+            complexity = "O(n^2) (random order → on average ~n^2/4 shifts)";
+        }
+        System.out.println("Detected input case: " + inputCase);
+        System.out.println("Time complexity for this input: " + complexity);
+
+        // ---- Perform Insertion Sort ----
+        insertionSort(arr);
+
+        System.out.println("\nSorted Array:");
+        printArray(arr);
+    }
+}
